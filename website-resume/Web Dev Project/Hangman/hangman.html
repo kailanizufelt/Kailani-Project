@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Christmas Hangman</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Christmas Hangman</h1>
+
+        <p id="wordDisplay">_ _ _ _ _</p>
+
+        <p>Wrong guesses: <span id="wrongLetters"></span></p>
+        <p>Attempts left: <span id="attempts">8</span></p>
+
+        <input type="text" id="letterInput" maxlength="1" placeholder="Letter">
+        <button id="guessBtn">Guess</button>
+        <button id="resetBtn">Try Again</button>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const words = ["christmas", "snowman", "reindeer", "gingerbread", "ornament", "tinsel", "mistletoe", "carols", "sleigh" ];
+        let selectedWord, displayedWord, wrongLetters, attempts;
+
+        const wordDisplay = document.getElementById("wordDisplay");
+        const wrongLettersDisplay = document.getElementById("wrongLetters");
+        const attemptsDisplay = document.getElementById("attempts");
+        const message = document.getElementById("message");
+        const letterInput = document.getElementById("letterInput");
+        const guessBtn = document.getElementById("guessBtn");
+        const resetBtn = document.getElementById("resetBtn");
+
+        function startGame() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            displayedWord = Array(selectedWord.length).fill("_");
+            wrongLetters = [];
+            attempts = 8;
+
+            wordDisplay.textContent = displayedWord.join(" ");
+            wrongLettersDisplay.textContent = "";
+            attemptsDisplay.textContent = attempts;
+            message.textContent = "";
+            guessBtn.disabled = false;
+            letterInput.value = "";
+        }
+
+        startGame();
+
+        guessBtn.addEventListener("click", () => {
+            const letter = letterInput.value.toLowerCase();
+            letterInput.value = "";
+
+            if (!letter || !/[a-z]/.test(letter)) {
+                message.textContent = "Enter a valid letter!";
+                return;
+            }
+
+            if (selectedWord.includes(letter)) {
+                selectedWord.split("").forEach((char, index) => {
+                    if (char === letter) displayedWord[index] = letter;
+                });
+                wordDisplay.textContent = displayedWord.join(" ");
+
+                if (!displayedWord.includes("_")) {
+                    message.textContent = "🎉 You won!";
+                    guessBtn.disabled = true;
+                }
+            } else {
+                if (!wrongLetters.includes(letter)) {
+                    wrongLetters.push(letter);
+                    attempts--;
+                }
+                wrongLettersDisplay.textContent = wrongLetters.join(", ");
+                attemptsDisplay.textContent = attempts;
+
+                if (attempts === 0) {
+                    message.textContent = `Game Over! Word was "${selectedWord}"`;
+                    guessBtn.disabled = true;
+                }
+            }
+        });
+
+        resetBtn.addEventListener("click", startGame);
+    </script>
+    <a href="../scratch.html" class="bottom-link">Go Back to Main Page</a>
+</body>
+</html>
